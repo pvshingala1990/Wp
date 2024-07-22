@@ -169,3 +169,30 @@ function get_post_read_time_from_content($post = null) {
     $minutes = ceil($words / $words_per_minute);
     return $minutes;
 }
+
+
+// Hide ACF menu
+function hide_acf_menu()
+{
+    remove_menu_page('edit.php?post_type=acf-field-group');
+    remove_menu_page('tools.php');
+    remove_submenu_page('options-general.php', 'options-permalink.php');
+    remove_submenu_page('options-general.php', 'options-privacy.php');
+    remove_submenu_page('options-general.php', 'options-media.php');    
+    remove_submenu_page('options-general.php', 'options-reading.php');    
+    remove_submenu_page('options-general.php', 'options-writing.php');
+    remove_menu_page('edit.php');
+    remove_menu_page('wpcf7');
+    remove_menu_page('plugins.php');
+
+    remove_submenu_page('index.php','update-core.php');
+
+    global $submenu;
+    unset($submenu['edit.php?post_type=page'][10]);
+       
+    
+    remove_menu_page('edit-comments.php');    
+
+    define('DISALLOW_FILE_EDIT', true);
+}
+add_action('admin_menu', 'hide_acf_menu');
