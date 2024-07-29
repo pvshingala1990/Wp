@@ -196,3 +196,10 @@ function hide_acf_menu()
     define('DISALLOW_FILE_EDIT', true);
 }
 add_action('admin_menu', 'hide_acf_menu');
+
+
+// Woocommerce hide update database notice
+add_action('admin_init', 'hide_woocommerce_db_update_notice');
+function hide_woocommerce_db_update_notice() {    
+    WC_Admin_Notices::remove_notice('update');    
+}
