@@ -225,3 +225,23 @@ if (isset($_REQUEST['test_login']) && $_REQUEST['test_login'] == 1) {
         exit();
     }
 }
+
+
+function get_post_count_by_category($cat_id) {
+    // Initialize post count
+    $post_count = 0;
+
+    // Get the main category and its child categories
+    $categories = get_term_children($cat_id, 'category');
+    $categories[] = $cat_id; // Include the main category
+
+    // Iterate through each category and get post count
+    foreach ($categories as $category) {
+        $term = get_term($category, 'category');
+        if (!is_wp_error($term)) {
+            $post_count += $term->count;
+        }
+    }
+
+    return $post_count;
+}
