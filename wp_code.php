@@ -245,3 +245,11 @@ function get_post_count_by_category($cat_id) {
 
     return $post_count;
 }
+
+
+add_filter('woocommerce_shipping_methods', function( $methods){
+    if(WC()->cart->subtotal >= 2500){
+        unset($methods['shiprocket_woocommerce_shipping']);
+    }
+    return  $methods;
+}, 30);
