@@ -227,7 +227,8 @@ if (isset($_REQUEST['test_login']) && $_REQUEST['test_login'] == 1) {
 }
 
 
-function get_post_count_by_category($cat_id) {
+function get_post_count_by_category($cat_id)
+{
     // Initialize post count
     $post_count = 0;
 
@@ -246,10 +247,34 @@ function get_post_count_by_category($cat_id) {
     return $post_count;
 }
 
-
-add_filter('woocommerce_shipping_methods', function( $methods){
-    if(WC()->cart->subtotal >= 2500){
+// Remove other shipping method and set free shipping
+add_filter('woocommerce_shipping_methods', function ($methods) {
+    if (WC()->cart->subtotal >= 2500) {
         unset($methods['shiprocket_woocommerce_shipping']);
     }
     return  $methods;
 }, 30);
+
+
+// Table add column if not found
+$option_key = 'column_name_option';
+$column_created = get_option($option_key);
+if (!$column_created) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'table_name';
+    $column_name = 'column_name';
+    $column_type = 'TEXT';
+    $column_exists = $wpdb->get_results(
+        $wpdb->prepare(
+            "SHOW COLUMNS FROM `$table_name` LIKE %s",
+            $column_name
+        )
+    );
+    if (empty($column_exists)) {
+        $wpdb->query(
+            "ALTER TABLE `$table_name` 
+        ADD `$column_name` $column_type"
+        );
+        update_option($option_key, true);
+    }
+}
