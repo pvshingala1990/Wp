@@ -278,3 +278,59 @@ if (!$column_created) {
         update_option($option_key, true);
     }
 }
+
+
+// Next/Previous post
+function get_adjacent_portfolio_post($direction = 'next', $custom_field_key = 'port_single_type', $custom_field_value = '2') {
+    global $post;
+
+    // Define query arguments
+    $args = array(
+        'post_type'      => 'portfolio',
+        'posts_per_page' => 1,
+        'meta_key'       => $custom_field_key,
+        'meta_value'     => $custom_field_value,
+        'orderby'        => 'post_date',
+        'order'          => ($direction === 'next') ? 'ASC' : 'DESC',
+        'post_status'    => 'publish',
+        'date_query'     => array(
+            array(
+                ($direction === 'next') ? 'after' : 'before' => get_the_date('Y-m-d H:i:s', $post->ID),
+                'inclusive' => false,
+            ),
+        ),
+        'exclude'        => array($post->ID), // Exclude the current post
+    );
+
+    // Run the query
+    $adjacent_post = new WP_Query($args);
+
+    // Check if there's a post
+    if ($adjacent_post->have_posts()) {
+        return $adjacent_post->next_post();
+    }
+
+    return null; // Return null if there's no adjacent post
+}
+
+function get_previous_portfolio_post() {
+    return get_adjacent_portfolio_post('previous');
+}
+
+function get_next_portfolio_post() {
+    return get_adjacent_portfolio_post('next');
+}
+
+
+<?php
+$previous_post = get_previous_portfolio_post();
+$next_post = get_next_portfolio_post();
+
+if ($previous_post) {
+    echo '<a href="' . get_permalink($previous_post->ID) . '">Previous Post: ' . get_the_title($previous_post->ID) . '</a>';
+}
+
+if ($next_post) {
+    echo '<a href="' . get_permalink($next_post->ID) . '">Next Post: ' . get_the_title($next_post->ID) . '</a>';
+}
+?>
